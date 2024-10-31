@@ -21,6 +21,10 @@ class AccountDB:
                 return account
         return None
 
+    def delete(self, account_num):
+        search = self.search_public(account_num)
+        self.account_database.remove(search)
+
     def __str__(self):
         s = ''
         for account in self.account_database:
@@ -56,6 +60,7 @@ my_account_DB.insert(account2)
 my_account_DB.insert(account3)
 my_account_DB.insert(account4)
 my_account_DB.insert(account5)
+my_account_DB.delete("0003")
 print(my_account_DB)
 my_account_DB.search_public("0003").deposit(50)
 print(my_account_DB)
