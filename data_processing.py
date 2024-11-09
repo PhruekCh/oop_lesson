@@ -1,70 +1,82 @@
-import csv, os
+import os
+import csv
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-cities = []
+
+class TableDB:
+    def __init__(self):
+        self.cities_database = []
+        self.countries_database = []
+
+    def insert_countries(self, table):
+        self.countries_database.append(table)
+
+    def insert_cities(self, table):
+        self.cities_database.append(table)
+
+    def search_countries(self, table_name):
+        for item in self.countries_database:
+            if item == table_name:
+                return item
+            return None
+
+    def search_cities(self, table_name):
+        for item in self.cities_database:
+            if item == table_name:
+                return item
+            return None
+
+    def __str__(self):
+        return f"Current Countries: {self.countries_database}\
+        \nCurrent Cities: {self.cities_database}"
+
+
+class Table:
+    def __init__(self, DB):
+        self.cities_table = DB.cities_database
+        self.countries_table = DB.countries_database
+
+    def filter(self, condition, choice):
+        filtered_list = []
+        if choice.lower() == "cities":
+            for item in self.cities_table:
+                if condition(item):
+                    filtered_list.append(item)
+            return filtered_list
+        if choice.lower() == "countries":
+            for item in self.countries_table:
+                if condition(item):
+                    filtered_list.append(item)
+            return filtered_list
+        return None
+
+    def aggregate(self, aggregation_key, aggregation_function, choice):
+        values = []
+        if choice.lower() == "cities":
+            for item in self.cities_table:
+                values.append(float(item[aggregation_key]))
+            return aggregation_function(values)
+        if choice.lower() == "countries":
+            for item in self.countries_table:
+                values.append(float(item[aggregation_key]))
+            return aggregation_function(values)
+        return None
+
+
+# MAIN
+italy_table = Table(TableDB())
 with open(os.path.join(__location__, 'Cities.csv')) as f:
     rows = csv.DictReader(f)
     for r in rows:
-        cities.append(dict(r))
+        italy_table.cities_table.append(dict(r))
 
-countries = []
 with open(os.path.join(__location__, 'Countries.csv')) as f:
     rows = csv.DictReader(f)
     for r in rows:
-        countries.append(dict(r))
+        italy_table.countries_table.append(dict(r))
 
-# Print the average temperature of all the cities
-print("The average temperature of all the cities:")
-temps = []
-for city in cities:
-    temps.append(float(city['temperature']))
-print(sum(temps)/len(temps))
-print()
-
-# Print all cities in Italy
-cities_temp = []
-my_country = 'Italy'
-for city in cities:
-    if city['country'] == my_country:
-        cities_temp.append(city['city'])
-print("All the cities in", my_country, ":")
-print(cities_temp)
-print()
-
-# Print the average temperature for all the cities in Italy
-temps = []
-my_country = 'Italy'
-for city in cities:
-    if city['country'] == my_country:
-        temps.append(float(city['temperature']))
-print("The average temperature of all the cities in", my_country, ":")
-print(sum(temps)/len(temps))
-print()
-
-# Print the max temperature for all the cities in Italy
-temps = []
-my_country = 'Italy'
-for city in cities:
-    if city['country'] == my_country:
-        temps.append(float(city['temperature']))
-print("The max temperature of all the cities in", my_country, ":")
-print(max(temps))
-print()
-
-# Print the min temperature for all the cities in Italy
-temps = []
-my_country = 'Italy'
-for city in cities:
-    if city['country'] == my_country:
-        temps.append(float(city['temperature']))
-print("The min temperature of all the cities in", my_country, ":")
-print(min(temps))
-print()
-
-# Let's write code to
-# - print the average temperature for all the cities in Italy
-# - print the average temperature for all the cities in Sweden
-# - print the min temperature for all the cities in Italy
-# - print the max temperature for all the cities in Sweden
+x = italy_table.filter(lambda x: float(x['latitude']) >= 60.0, "cities")
+for stuff in x:
+    print(stuff)
